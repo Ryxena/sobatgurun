@@ -2,6 +2,14 @@
 
 class Home extends Controller
 {
+    public function __construct()
+    {
+        if (!isset($_SESSION['role']) || $_SESSION['role'] != 'jamaah') {
+            header('Location: ' . BASE_URL . '/auth');
+            exit;
+        }
+    }
+
     public function index()
     {
         $data['title'] = "Home";
