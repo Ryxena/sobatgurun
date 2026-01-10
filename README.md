@@ -1,5 +1,6 @@
 # boilerplate-mvc
-----------
+
+---
 
 ## Features
 
@@ -14,6 +15,7 @@
 # Docs
 
 Struktur file
+
 ```text
 /
 ├── app/                # Core application logic
@@ -37,3 +39,4 @@ if there is an error just create an issue
 
 Contributions are always welcome!
 
+Update cuy
