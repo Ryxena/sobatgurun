@@ -22,7 +22,7 @@ class Jamaah_model
     {
         $query = "INSERT INTO jamaah 
                     (email, password, nik, nama_lengkap, no_hp, alamat)
-                  VALUES
+                VALUES
                     (:email, :password, :nik, :nama, :hp, :alamat)";
 
         $this->db->query($query);
@@ -36,5 +36,12 @@ class Jamaah_model
 
         $this->db->execute();
         return $this->db->rowCount();
+    }
+
+    public function getJamaahById($id)
+    {
+        $this->db->query('SELECT * FROM ' . $this->table . ' WHERE id_jamaah=:id');
+        $this->db->bind('id', $id);
+        return $this->db->single();
     }
 }

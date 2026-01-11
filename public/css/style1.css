@@ -1,0 +1,96 @@
+html {
+    scroll-behavior: smooth;
+}
+/* typograpy keseluruhan */
+body {
+    font-family: 'Poppins', sans-serif;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+.text-warning {
+    color: #dfb163 !important;
+}
+
+.btn-outline-warning {
+    border-color: #dfb163;
+    color: #dfb163;
+}
+.btn-outline-warning:hover {
+    background-color: #dfb163;
+    color: #fff;
+}
+/* transisi campur */
+.nav-link, 
+.dropdown-item, 
+.btn, 
+.card {
+    transition: all 0.3s ease-in-out !important;
+}
+/* Navbar */
+.navbar {
+    z-index: 1050 !important; 
+    padding: 15px 0;
+    background-color: #121212 !important;
+}
+
+.nav-link {
+    font-weight: 500;
+    margin: 0 5px;
+    color: gainsboro;
+}
+
+.nav-link:hover {
+    color: #dfb163 !important;
+}
+
+/* Card style & animasi */
+.card {
+    border: 1px solid #333;
+    transition: all 0.3s ease;
+    background: #1e1e1e;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    border-color: #dfb163;
+    box-shadow: 0 10px 20px rgba(223, 177, 99, 0.1);
+}
+
+/* DataTables */
+.dataTables_wrapper {
+    color: #fff !important;
+    padding: 20px;
+    background: #1e1e1e;
+    border-radius: 10px;
+}
+/*menu drop down profil*/
+.dropdown-menu {
+    z-index: 1100 !important;
+    background-color: #1a1a1a !important; 
+    border: 1px solid #ffc107 !important;
+    display: block;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.3s ease-in-out;
+}
+
+.dropdown-menu.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.dropdown-item {
+    padding: 10px 20px;
+    transition: 0.2s;
+}
+
+.dropdown-item:hover {
+    background-color: #ffc107 !important;
+    color: #000 !important;
+}
