@@ -2,41 +2,62 @@
 class Auth extends Controller {
 
     public function index() {
-        if (isset($_SESSION['role']) && $_SESSION['role'] == 'jamaah') {
-            header('Location: ' . BASE_URL . '/home');
+        if (isset($_SESSION['role'])) {
+            if ($_SESSION['role'] == 'admin') {
+                header('Location: ' . BASE_URL . '/admin/transaksi');
+            } else {
+                header('Location: ' . BASE_URL . '/admin');
+            }
             exit;
         }
 
-        $data['title'] = 'Login Jamaah';
+        $data['title'] = 'Login Sistem';
         $this->view('templates/header', $data);
         $this->view('auth/login', $data);
         $this->view('templates/footer');
     }
 
     public function login() {
-        $email = $_POST['email'];
-        $password = $_POST['password'];
+        $identifier = $_POST['email'];
+        $password   = $_POST['password'];
 
-        $user = $this->model('Jamaah_model')->getJamaahByEmail($email);
+        $admin = $this->model('Admin_model')->getAdminByUsername($identifier);
 
-        if ($user) {
-            if (password_verify($password, $user['password'])) {
-                $_SESSION['role'] = 'jamaah';
-                $_SESSION['id_user'] = $user['id_jamaah'];
-                $_SESSION['nama'] = $user['nama_lengkap'];
+        if ($admin) {
+            if (password_verify($password, $admin['password'])) {
+                $_SESSION['role']      = 'admin';
+                $_SESSION['id_user']   = $admin['id_admin'];
+                $_SESSION['nama_user'] = $admin['nama_petugas'];
+
+                header('Location: ' . BASE_URL . '/paket');
+                exit;
+            } else {
+                Flasher::setFlash('Login Gagal', 'Password Admin salah.', 'danger');
+                header('Location: ' . BASE_URL . '/auth');
+                exit;
+            }
+        }
+
+        $jamaah = $this->model('Jamaah_model')->getJamaahByEmail($identifier);
+
+        if ($jamaah) {
+            if (password_verify($password, $jamaah['password'])) {
+                $_SESSION['role']      = 'jamaah';
+                $_SESSION['id_user']   = $jamaah['id_jamaah'];
+                $_SESSION['nama_user'] = $jamaah['nama_lengkap'];
 
                 header('Location: ' . BASE_URL . '/home');
                 exit;
             } else {
-                Flasher::setFlash('Login', 'Gagal (Password Salah)', 'danger');
+                Flasher::setFlash('Login Gagal', 'Password salah.', 'danger');
                 header('Location: ' . BASE_URL . '/auth');
                 exit;
             }
-        } else {
-            Flasher::setFlash('Login', 'Gagal (Email tidak ditemukan)', 'danger');
-            header('Location: ' . BASE_URL . '/auth');
-            exit;
         }
+
+        Flasher::setFlash('Login Gagal', 'Akun tidak ditemukan.', 'danger');
+        header('Location: ' . BASE_URL . '/auth');
+        exit;
     }
 
     public function logout() {
@@ -52,7 +73,7 @@ class Auth extends Controller {
             exit;
         }
 
-        $data['title'] = 'Daftar Akun Baru';
+        $data['title'] = 'Daftar Akun Jamaah';
         $this->view('templates/header', $data);
         $this->view('auth/register', $data);
         $this->view('templates/footer');
@@ -60,7 +81,6 @@ class Auth extends Controller {
 
     public function prosesRegister() {
         $cekEmail = $this->model('Jamaah_model')->getJamaahByEmail($_POST['email']);
-
         if ($cekEmail) {
             Flasher::setFlash('Gagal', 'Email sudah terdaftar!', 'danger');
             header('Location: ' . BASE_URL . '/auth/register');
@@ -68,7 +88,7 @@ class Auth extends Controller {
         }
 
         if ($_POST['password'] !== $_POST['ulangi_password']) {
-            Flasher::setFlash('Gagal', 'Password tidak sama!', 'danger');
+            Flasher::setFlash('Gagal', 'Password konfirmasi tidak sama!', 'danger');
             header('Location: ' . BASE_URL . '/auth/register');
             exit;
         }
@@ -76,12 +96,50 @@ class Auth extends Controller {
         $_POST['password'] = password_hash($_POST['password'], PASSWORD_DEFAULT);
 
         if ($this->model('Jamaah_model')->createJamaah($_POST) > 0) {
-            Flasher::setFlash('Berhasil', 'Akun dibuat. Silakan Login.', 'success');
+            Flasher::setFlash('Berhasil', 'Akun jamaah dibuat. Silakan Login.', 'success');
             header('Location: ' . BASE_URL . '/auth');
             exit;
         } else {
             Flasher::setFlash('Gagal', 'Terjadi kesalahan sistem.', 'danger');
             header('Location: ' . BASE_URL . '/auth/register');
+            exit;
+        }
+    }
+
+    public function admin() {
+        if (isset($_SESSION['role'])) {
+            if ($_SESSION['role'] == 'admin') {
+                header('Location: ' . BASE_URL . '/admin/transaksi');
+            } else {
+                header('Location: ' . BASE_URL . '/home');
+            }
+            exit;
+        }
+
+        $data['title'] = 'Login Administrator';
+        $this->view('templates/header', $data);
+        $this->view('admin/login', $data);
+        $this->view('templates/footer');
+    }
+
+    public function loginAdmin() {
+        $username = $_POST['username'];
+        $password = $_POST['password'];
+
+        $admin = $this->model('Admin_model')->getAdminByUsername($username);
+
+        if ($admin && password_verify($password, $admin['password'])) {
+
+            $_SESSION['role'] = 'admin';
+            $_SESSION['id_user'] = $admin['id_admin'];
+            $_SESSION['nama_user'] = $admin['nama_petugas'];
+
+            header('Location: ' . BASE_URL . '/admin/transaksi');
+            exit;
+
+        } else {
+            Flasher::setFlash('Gagal', 'Username atau Password Salah', 'danger');
+            header('Location: ' . BASE_URL . '/auth/admin');
             exit;
         }
     }

@@ -105,4 +105,81 @@ $(function () {
       },
     });
   });
+  $(".tombolTambahAdmin").on("click", function () {
+    $("#judulModalAdmin").html("Tambah Admin Baru");
+    $(".modal-footer button[type=submit]").html("Simpan Data");
+
+    // Reset Form
+    $("#id_admin").val("");
+    $("#nama_petugas").val("");
+    $("#username").val("");
+    $("#password").val("");
+
+    // Logic Password: Kalau tambah baru, password WAJIB diisi
+    $("#password").attr("required", true);
+    $("#password").attr("placeholder", "Masukkan password...");
+    $("#passwordHelp").addClass("d-none"); // Sembunyikan pesan "kosongkan jika..."
+
+    // Set Action URL
+    $(".modal-body form").attr("action", BASEURL + "/admin/tambah");
+  });
+
+  // 2. Tombol Ubah Admin
+  $(".tampilModalUbahAdmin").on("click", function () {
+    $("#judulModalAdmin").html("Edit Data Admin");
+    $(".modal-footer button[type=submit]").html("Update Data");
+
+    // Set Action URL
+    $(".modal-body form").attr("action", BASEURL + "/admin/ubah"); // Pastikan method ubah menangani POST
+
+    const id = $(this).data("id");
+
+    // Logic Password: Kalau edit, password TIDAK WAJIB (opsional)
+    $("#password").removeAttr("required");
+    $("#password").val(""); // Kosongkan field password
+    $("#password").attr("placeholder", "(Tidak berubah)");
+    $("#passwordHelp").removeClass("d-none"); // Munculkan pesan bantuan
+
+    $.ajax({
+      url: BASEURL + "/admin/getubah", // Pastikan method ini ada di Controller Admin
+      data: { id: id },
+      method: "post",
+      dataType: "json",
+      success: function (data) {
+        $("#id_admin").val(data.id_admin);
+        $("#nama_petugas").val(data.nama_petugas);
+        $("#username").val(data.username);
+        // Password jangan diisi valuenya (karena terenkripsi), biarkan kosong
+      },
+      error: function (xhr, status, error) {
+        console.error("Error AJAX Admin:", error);
+      },
+    });
+  });
+  $(".tampilModalUbahProfil").on("click", function () {
+    const id = $(this).data("id");
+
+    $.ajax({
+      url: BASEURL + "/profil/getubah",
+      data: { id: id },
+      method: "post",
+      dataType: "json",
+      success: function (data) {
+        // Tempel data dari Database ke Input Modal
+        $("#id_jamaah").val(data.id_jamaah);
+        $("#nama_lengkap").val(data.nama_lengkap);
+        $("#nik").val(data.nik);
+        $("#nomor_paspor").val(data.nomor_paspor);
+        $("#email").val(data.email);
+        $("#no_hp").val(data.no_hp);
+        $("#alamat").val(data.alamat);
+
+        // Password selalu dikosongkan demi keamanan
+        $("#password").val("");
+      },
+      error: function (xhr, status, error) {
+        console.error("Error AJAX Profil:", error);
+      }
+    });
+  });
 });

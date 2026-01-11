@@ -19,7 +19,7 @@ try {
           Username: <b>admin</b> | Password: <b>admin123</b></p>";
 
 } catch (Exception $e) {
-    echo "<p style='color:red'><b>Skip Admin:</b> Username 'admin' mungkin sudah ada.</p>";
+    echo "<p style='color:red'>   <b>Skip Admin:</b> Username 'admin' mungkin sudah ada.</p>";
 }
 
 echo "<hr>";

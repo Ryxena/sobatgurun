@@ -44,4 +44,45 @@ class Jamaah_model
         $this->db->bind('id', $id);
         return $this->db->single();
     }
+
+    public function updateDataJamaah($data)
+    {
+        if (empty($data['password'])) {
+            $query = "UPDATE jamaah SET 
+                    nama_lengkap = :nama,
+                    nik = :nik,
+                    no_paspor = :paspor,
+                    no_hp = :hp,
+                    email = :email,
+                    alamat = :alamat
+                  WHERE id_jamaah = :id";
+
+            $this->db->query($query);
+        } else {
+            $query = "UPDATE jamaah SET 
+                    nama_lengkap = :nama,
+                    nik = :nik,
+                    no_paspor = :paspor,
+                    no_hp = :hp,
+                    email = :email,
+                    alamat = :alamat,
+                    password = :pass
+                  WHERE id_jamaah = :id";
+
+            $this->db->query($query);
+
+            $this->db->bind('pass', password_hash($data['password'], PASSWORD_DEFAULT));
+        }
+
+        $this->db->bind('nama', $data['nama_lengkap']);
+        $this->db->bind('nik', $data['nik']);
+        $this->db->bind('paspor', $data['no_paspor']);
+        $this->db->bind('hp', $data['no_hp']);
+        $this->db->bind('email', $data['email']);
+        $this->db->bind('alamat', $data['alamat']);
+        $this->db->bind('id', $data['id_jamaah']);
+
+        $this->db->execute();
+        return $this->db->rowCount();
+    }
 }
