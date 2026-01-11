@@ -13,7 +13,7 @@ class Home extends Controller
     public function index()
     {
         $data['title'] = "Home";
-        $data['mahasiswa'] = $this->model('Siswa_model')->getAllMahasiswa();
+        $data['paket'] = $this->model('Paket_model')->getAllPaket();
         $this->view("templates/header", $data);
         $this->view("home/index", $data);
         $this->view("templates/footer");

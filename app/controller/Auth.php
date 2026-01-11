@@ -7,7 +7,7 @@ class Auth extends Controller {
             exit;
         }
 
-        $data['judul'] = 'Login Jamaah';
+        $data['title'] = 'Login Jamaah';
         $this->view('templates/header', $data);
         $this->view('auth/login', $data);
         $this->view('templates/footer');
@@ -44,5 +44,45 @@ class Auth extends Controller {
         session_unset();
         header('Location: ' . BASE_URL . '/auth');
         exit;
+    }
+
+    public function register() {
+        if (isset($_SESSION['role'])) {
+            header('Location: ' . BASE_URL . '/home');
+            exit;
+        }
+
+        $data['title'] = 'Daftar Akun Baru';
+        $this->view('templates/header', $data);
+        $this->view('auth/register', $data);
+        $this->view('templates/footer');
+    }
+
+    public function prosesRegister() {
+        $cekEmail = $this->model('Jamaah_model')->getJamaahByEmail($_POST['email']);
+
+        if ($cekEmail) {
+            Flasher::setFlash('Gagal', 'Email sudah terdaftar!', 'danger');
+            header('Location: ' . BASE_URL . '/auth/register');
+            exit;
+        }
+
+        if ($_POST['password'] !== $_POST['ulangi_password']) {
+            Flasher::setFlash('Gagal', 'Password tidak sama!', 'danger');
+            header('Location: ' . BASE_URL . '/auth/register');
+            exit;
+        }
+
+        $_POST['password'] = password_hash($_POST['password'], PASSWORD_DEFAULT);
+
+        if ($this->model('Jamaah_model')->createJamaah($_POST) > 0) {
+            Flasher::setFlash('Berhasil', 'Akun dibuat. Silakan Login.', 'success');
+            header('Location: ' . BASE_URL . '/auth');
+            exit;
+        } else {
+            Flasher::setFlash('Gagal', 'Terjadi kesalahan sistem.', 'danger');
+            header('Location: ' . BASE_URL . '/auth/register');
+            exit;
+        }
     }
 }

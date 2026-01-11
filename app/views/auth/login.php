@@ -31,7 +31,7 @@
 
                 </div>
                 <div class="card-footer text-center">
-                    <small>Belum punya akun? <a href="#">Daftar di sini</a></small>
+                    <small>Belum punya akun? <a href="<?= BASE_URL; ?>/auth/register">Daftar di sini</a></small>
                 </div>
             </div>
 

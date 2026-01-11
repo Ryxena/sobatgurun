@@ -17,4 +17,24 @@ class Jamaah_model
         $this->db->bind("email", $email);
         return $this->db->single();
     }
+
+    public function createJamaah($data)
+    {
+        $query = "INSERT INTO jamaah 
+                    (email, password, nik, nama_lengkap, no_hp, alamat)
+                  VALUES
+                    (:email, :password, :nik, :nama, :hp, :alamat)";
+
+        $this->db->query($query);
+
+        $this->db->bind('email', $data['email']);
+        $this->db->bind('password', $data['password']);
+        $this->db->bind('nik', $data['nik']);
+        $this->db->bind('nama', $data['nama']);
+        $this->db->bind('hp', $data['hp']);
+        $this->db->bind('alamat', $data['alamat']);
+
+        $this->db->execute();
+        return $this->db->rowCount();
+    }
 }
