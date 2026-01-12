@@ -7,7 +7,7 @@
                 <p class="mb-2">Silakan selesaikan pembayaran agar kursi Anda aman.</p>
             </div>
 
-            <div class="card border-0 shadow-lg rounded-4 overflow-hidden" style="background-color:#fff; color:#333;">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden" style="background-color:#000; color:#333;">
 
                 <div class="card-header bg-dark text-white p-4 d-flex justify-content-between align-items-center">
                     <div>
@@ -29,12 +29,12 @@
                         </div>
                         <div class="col-md-6 text-md-end mt-3 mt-md-0">
                             <small class="text-muted fw-bold">TANGGAL TRANSAKSI</small>
-                            <p class="fw-bold mb-0"><?= date('d F Y', strtotime($data['trx']['tgl_transaksi'])); ?></p>
-                            <small><?= date('H:i', strtotime($data['trx']['tgl_transaksi'])); ?> WIB</small>
+                            <p class="text-mb-0" style="color:#fff"><?= date('d F Y', strtotime($data['trx']['tgl_transaksi'])); ?></p>
+                            <small style="color:#fff"><?= date('H:i', strtotime($data['trx']['tgl_transaksi'])); ?> WIB</small>
                         </div>
                     </div>
 
-                    <div class="table-responsive bg-light p-3 rounded-3 mb-4">
+                    <div class="table-responsive bg-dark p-3 rounded-3 mb-4">
                         <table class="table table-borderless mb-0">
                             <tr>
                                 <td class="text-muted">Nama Jamaah</td>
@@ -74,7 +74,7 @@
                     </div>
 
                 </div>
-                <div class="card-footer bg-light text-center py-3 border-top border-secondary border-opacity-10">
+                <div class="card-footer bg-dark text-center py-3 border-top border-secondary border-opacity-10">
                     <small class="text-muted">Terima kasih telah mempercayakan perjalanan ibadah Anda bersama Sobat Gurun.</small>
                 </div>
             </div>
