@@ -13,7 +13,7 @@ class Transaksi_model
     public function tambahTransaksi($data)
     {
         $id_jamaah = $_SESSION['id_user'];
-        $id_paket  = $data['id_paket'];
+        $id_paket = $data['id_paket'];
 
         $queryCek = "SELECT * FROM transaksi 
                      WHERE id_jamaah = :id_j 
@@ -113,23 +113,23 @@ class Transaksi_model
 
     public function simpanPembayaran($data)
     {
-
-        // Data dari Form
         $id_trx = $data['id_transaksi'];
-        $tipe = $data['tipe_pembayaran'];
         $jumlah = $data['jumlah_bayar'];
+        $tipe = $data['tipe_pembayaran'];
+        $bukti = $data['bukti_bayar'];
 
-        $keteranganBukti = "Metode: " . $tipe;
+        $keterangan = "Pembayaran " . $tipe;
 
         $queryBayar = "INSERT INTO pembayaran 
-                        (id_transaksi, jumlah_bayar, bukti_bayar, status_verifikasi, tgl_bayar)
-                       VALUES 
-                        (:id_trx, :jumlah, :bukti, 'Pending', NOW())";
+                    (id_transaksi, jumlah_bayar, bukti_bayar, status_verifikasi, keterangan, tgl_bayar)
+                   VALUES 
+                    (:id_trx, :jumlah, :bukti, 'Pending', :ket, NOW())";
 
         $this->db->query($queryBayar);
         $this->db->bind('id_trx', $id_trx);
         $this->db->bind('jumlah', $jumlah);
-        $this->db->bind('bukti', $keteranganBukti);
+        $this->db->bind('bukti', $bukti);
+        $this->db->bind('ket', $keterangan);
         $this->db->execute();
 
         $queryTrx = "UPDATE transaksi SET status_bayar = 'Verifikasi' WHERE id_transaksi = :id_trx";
@@ -140,33 +140,43 @@ class Transaksi_model
         return $this->db->rowCount();
     }
 
-    public function verifikasiPembayaran($id)
+    public function prosesVerifikasi($data)
     {
-        $query = "UPDATE transaksi SET status_bayar = 'Lunas' WHERE id_transaksi = :id";
-        $this->db->query($query);
+        $id = $data['id_transaksi'];
+        $statusBaru = $data['status_aksi']; // 'Lunas', 'DP', atau 'Batal'
+        $ketAdmin = trim($data['keterangan_admin']); // Catatan admin
+
+        $statusVerifikasi = ($statusBaru == 'Batal') ? 'Invalid' : 'Valid';
+
+        $queryTrx = "UPDATE transaksi SET status_bayar = :status WHERE id_transaksi = :id";
+        $this->db->query($queryTrx);
+        $this->db->bind('status', $statusBaru);
         $this->db->bind('id', $id);
         $this->db->execute();
 
-        $query2 = "UPDATE pembayaran SET status_verifikasi = 'Valid' WHERE id_transaksi = :id";
-        $this->db->query($query2);
+        $rowCountTrx = $this->db->rowCount();
+
+        // -----------------------------------------------------------
+        if (!empty($ketAdmin)) {
+            $queryByr = "UPDATE pembayaran 
+                     SET status_verifikasi = :status,
+                         keterangan = LEFT(CONCAT(keterangan, ' | Adm: ', :ket), 100)
+                     WHERE id_transaksi = :id";
+
+            $this->db->query($queryByr);
+            $this->db->bind('ket', $ketAdmin);
+        } else {
+            $queryByr = "UPDATE pembayaran 
+                     SET status_verifikasi = :status 
+                     WHERE id_transaksi = :id";
+
+            $this->db->query($queryByr);
+        }
+
+        $this->db->bind('status', $statusVerifikasi);
         $this->db->bind('id', $id);
         $this->db->execute();
 
-        return $this->db->rowCount();
-    }
-
-    public function tolakPembayaran($id)
-    {
-        $query = "UPDATE transaksi SET status_bayar = 'Batal' WHERE id_transaksi = :id";
-        $this->db->query($query);
-        $this->db->bind('id', $id);
-        $this->db->execute();
-
-        $query2 = "UPDATE pembayaran SET status_verifikasi = 'Invalid' WHERE id_transaksi = :id";
-        $this->db->query($query2);
-        $this->db->bind('id', $id);
-        $this->db->execute();
-
-        return $this->db->rowCount();
+        return $rowCountTrx;
     }
 }

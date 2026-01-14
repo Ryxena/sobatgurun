@@ -4,11 +4,11 @@ class Admin extends Controller
 {
     public function __construct()
     {
-        // 1. CEK APAKAH SUDAH LOGIN?
         if (!isset($_SESSION['role'])) {
-            header('Location: ' . BASE_URL . '/auth/admin');
+            header('Location: ' . BASE_URL . '/auth');
             exit;
         }
+
         if ($_SESSION['role'] != 'admin') {
             header('Location: ' . BASE_URL . '/home');
             exit;
@@ -19,7 +19,6 @@ class Admin extends Controller
     {
         $data['title'] = 'Kelola Transaksi';
 
-        // Ambil semua transaksi dari model
         $data['trx'] = $this->model('Transaksi_model')->getAllTransaksi();
 
         $this->view('templates/header', $data);
@@ -27,21 +26,12 @@ class Admin extends Controller
         $this->view('templates/footer');
     }
 
-    public function tolak($id_transaksi)
+    public function prosesVerifikasi()
     {
-        if ($this->model('Transaksi_model')->tolakPembayaran($id_transaksi[0]) > 0) {
-            Flasher::setFlash('Berhasil', 'Transaksi dibatalkan.', 'warning');
-        }
-        header('Location: ' . BASE_URL . '/admin/transaksi');
-        exit;
-    }
-
-    public function verifikasi($id_transaksi)
-    {
-        if ($this->model('Transaksi_model')->verifikasiPembayaran($id_transaksi[0]) > 0) {
-            Flasher::setFlash('Berhasil', 'Pembayaran telah divalidasi.', 'success');
+        if ($this->model('Transaksi_model')->prosesVerifikasi($_POST) > 0) {
+            Flasher::setFlash('Berhasil', 'Status transaksi diperbarui', 'success');
         } else {
-            Flasher::setFlash('Gagal', 'Validasi gagal.', 'danger');
+            Flasher::setFlash('Gagal', 'Memperbarui status transaksi', 'danger');
         }
         header('Location: ' . BASE_URL . '/admin/transaksi');
         exit;
